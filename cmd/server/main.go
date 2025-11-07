@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/bootdotdev/learn-pub-sub-starter/internal/gamelogic"
 	"github.com/bootdotdev/learn-pub-sub-starter/internal/pubsub"
@@ -64,7 +63,7 @@ func main() {
 			fmt.Println("Resume message sent!")
 		case "quit":
 			fmt.Println("Goodbye!")
-			os.Exit(0)
+			return
 		default:
 			fmt.Printf("Unknown command: %s\n", input[0])
 		}
