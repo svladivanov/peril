@@ -34,7 +34,9 @@ func DeclareAndBind(conn *amqp.Connection, exchange, queueName, key string, queu
 		queueType != SimpleQueueDurable,
 		queueType != SimpleQueueDurable,
 		false,
-		nil,
+		amqp.Table{
+			"x-dead-letter-exchange": "peril_dlx",
+		},
 	)
 	if err != nil {
 		return nil, amqp.Queue{}, fmt.Errorf("could not declare queue: %v", err)
