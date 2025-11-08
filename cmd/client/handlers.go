@@ -22,10 +22,10 @@ func handlerMove(gs *gamelogic.GameState, publishCh *amqp.Channel) func(gamelogi
 		defer fmt.Print("> ")
 		moveOutcome := gs.HandleMove(move)
 		switch moveOutcome {
+		case gamelogic.MoveOutcomeSamePlayer:
+			return pubsub.Ack
 		case gamelogic.MoveOutComeSafe:
 			return pubsub.Ack
-		case gamelogic.MoveOutcomeSamePlayer:
-			return pubsub.NackDiscard
 		case gamelogic.MoveOutcomeMakeWar:
 			err := pubsub.PublishJSON(
 				publishCh,
@@ -40,7 +40,7 @@ func handlerMove(gs *gamelogic.GameState, publishCh *amqp.Channel) func(gamelogi
 				fmt.Println(err)
 				return pubsub.NackRequeue
 			}
-			return pubsub.NackRequeue
+			return pubsub.Ack
 		}
 
 		fmt.Println("error: unknown move outcome")
