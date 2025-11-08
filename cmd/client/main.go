@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/bootdotdev/learn-pub-sub-starter/internal/gamelogic"
 	"github.com/bootdotdev/learn-pub-sub-starter/internal/pubsub"
@@ -63,7 +64,7 @@ func main() {
 		routing.WarRecognitionsPrefix,
 		routing.WarRecognitionsPrefix+".*",
 		pubsub.SimpleQueueDurable,
-		handlerWar(gs),
+		handlerWar(gs, ch),
 	)
 	if err != nil {
 		log.Panicf("could not subscribe to war declarations: %v", err)
@@ -114,4 +115,17 @@ func main() {
 			fmt.Printf("Unrecognized command: %s\n", input[0])
 		}
 	}
+}
+
+func publishGameLog(publishCh *amqp.Channel, userName, msg string) error {
+	return pubsub.PublishGob(
+		publishCh,
+		routing.ExchangePerilTopic,
+		routing.GameLogSlug+"."+userName,
+		routing.GameLog{
+			Username:    userName,
+			CurrentTime: time.Now(),
+			Message:     msg,
+		},
+	)
 }
